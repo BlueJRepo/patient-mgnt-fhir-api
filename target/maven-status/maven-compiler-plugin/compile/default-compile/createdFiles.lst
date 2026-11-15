@@ -1,0 +1,8 @@
+au\gov\adha\api\service\PatientFhirService.class
+au\gov\adha\api\provider\PatientResourceProvider.class
+au\gov\adha\api\config\HttpTraceActuatorConfiguration.class
+au\gov\adha\api\service\PatientFhirServiceImp.class
+au\gov\adha\api\config\FhirConfig.class
+au\gov\adha\api\config\AsyncConfig.class
+au\gov\adha\api\PatientMgntApiApplication.class
+au\gov\adha\api\config\FhirConfig$1.class

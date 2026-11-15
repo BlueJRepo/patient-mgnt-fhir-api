@@ -35,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: adha/patient-mgnt-fhir-api
+          images: mulesie/patient-mgnt-fhir-api
           tags: |
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}

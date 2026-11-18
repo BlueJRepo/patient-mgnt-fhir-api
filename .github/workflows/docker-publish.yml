@@ -13,7 +13,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE_NAME: ${{ github.repository_owner }}/${{ github.repository }}
+      DOCKER_IMAGE_NAME: mulesie/patient-mgnt-fhir-api
       DOCKER_IMAGE_TAG_BUILD: ${{ github.run_number }}
       
     outputs:
@@ -80,3 +80,4 @@ jobs:
           git add ./k8s/local-deployment.yaml
           git commit -m "Update Docker Image Tag to ${{ env.DOCKER_IMAGE_TAG_BUILD }}"
           git push
+       

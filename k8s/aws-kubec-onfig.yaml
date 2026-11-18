@@ -17,10 +17,10 @@ spec:
       containers:
       - name: patient-mgnt-fhir-api-container
         # Replace with your actual Docker registry and image tag
-        image: mulesie/patient-mgnt-fhir-api:7
+        image: ECR_DOCKER_IMAGE_ARN
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8081
+        - containerPort: 3000
         # Resource management to ensure cluster stability
         resources:
           limits:
@@ -33,32 +33,19 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: "local"
-        # Health probes (Requires spring-boot-starter-actuator dependency)
-        livenessProbe:
-          httpGet:
-            path: /api/actuator/health/liveness
-            port: 8081
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/actuator/health/readiness
-            port: 8081
-          initialDelaySeconds: 30
-          periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: patient-mgnt-fhir-api-service
+  name: patient-mgnt-fhir-api-deployment
 spec:
-  type: ClusterIP      # Use LoadBalancer instead if deploying to cloud (AWS, GCP, Azure)
-  #type: LoadBalancer # Change from ClusterIP to LoadBalancer
+  #type: ClusterIP      # Use LoadBalancer instead if deploying to cloud (AWS, GCP, Azure)
+  type: LoadBalancer # Change from ClusterIP to LoadBalancer
   #type: NodePort # or LoadBalancer for Docker Desktop
   selector:
     app: patient-mgnt-fhir-api
   ports:
     - protocol: TCP
-      port: 9081        # Port exposed outside the cluster
-      targetPort: 8081 # Internal port your Spring Boot app listens on
+      port: 4000         # Port exposed outside the cluster
+      targetPort: 3000 # Internal port your Spring Boot app listens on
       #nodePort: 30080  # If using NodePort

@@ -5,13 +5,20 @@ on:
     branches: [ "main" ]
    
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
   # This workflow contains a single job called "build"
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE_NAME: ${{ github.repository_owner }}/patient-mgnt-hl7-api
+      DOCKER_IMAGE_TAG_BUILD: ${{ github.run_number }}
+      
+    outputs:
+      docker_tag: ${{ env.DOCKER_IMAGE_TAG_BUILD }}
+      
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4
@@ -35,10 +42,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: mulesie/patient-mgnt-fhir-api
+          images: ${{ env.DOCKER_IMAGE_NAME }}
           tags: |
             type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG_BUILD }},enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -50,3 +57,26 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Update Deployment YAML
+        run: |
+          DOCKER_IMAGE_TAG=${{ env.DOCKER_IMAGE_TAG_BUILD }}
+          sed -i "s|image: ${DOCKER_IMAGE_NAME}:.*|image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}|" ./k8s/local-deployment.yaml
+
+      - name: Commit and Push Changes
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+        run: |
+          echo  "===================================================="
+          echo  "$REPOSITORY_OWNER" | sed 's/./& /g'
+          echo  "$GIT_USER_EMAIL" | sed 's/./& /g'
+          echo  "$GIT_USER_NAME" | sed 's/./& /g'
+          echo  "$GIT_TOKEN" | sed 's/./& /g'
+          echo  "===================================================="
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
+          git add ./k8s/local-deployment.yaml
+          git commit -m "Update Docker Image Tag to ${{ env.DOCKER_IMAGE_TAG_BUILD }}"
+          git push

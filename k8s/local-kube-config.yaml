@@ -39,8 +39,8 @@ kind: Service
 metadata:
   name: patient-mgnt-fhir-api-deployment
 spec:
-  #type: ClusterIP      # Use LoadBalancer instead if deploying to cloud (AWS, GCP, Azure)
-  type: LoadBalancer # Change from ClusterIP to LoadBalancer
+  type: ClusterIP      # Use LoadBalancer instead if deploying to cloud (AWS, GCP, Azure)
+  #type: LoadBalancer # Change from ClusterIP to LoadBalancer
   #type: NodePort # or LoadBalancer for Docker Desktop
   selector:
     app: patient-mgnt-fhir-api

@@ -17,7 +17,7 @@ spec:
       containers:
       - name: patient-mgnt-fhir-api-container
         # Replace with your actual Docker registry and image tag
-        image: mulesie/patient-mgnt-fhir-api:15
+        image: mulesie/patient-mgnt-fhir-api:16
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
